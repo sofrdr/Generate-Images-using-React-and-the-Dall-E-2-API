@@ -1,34 +1,51 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
+import { Configuration, OpenAIApi } from "openai"
+
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
 
-  return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
+function App() {
+
+  const [prompt, setPrompt] = useState("");
+  const [img, setImg] = useState("");
+  
+  const configuration = new Configuration({
+    apiKey: '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'
+  })
+  const openai = new OpenAIApi(configuration)
+
+  const generateImage = async () => {
+    const res = await openai.createImage({
+      prompt: prompt,
+      n: 1,
+      size: '512x512'
+    });
+
+    setImg(res.data.data[0].url)
+  }
+  
+  return(
+    <div className='app-main'>
+      <>
+        <h1>Generate an Image using Open AI API</h1>
+
+        <textarea
+        className='app-input'
+        placeholder="Search Bears with Paint Brushes the Starry Night, painted by Vincent Van Gogh.."
+        onChange={(e) => setPrompt(e.target.value)}
+        rows='10'
+        cols='40'
+        ></textarea>
+
+        <button onClick={generateImage}>Generate an image</button>
+        {img ? <img className='app-img' src={img} alt='image'/> : <></>}
+      </>
     </div>
+
   )
+
+ 
 }
 
 export default App
